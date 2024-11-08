@@ -52,10 +52,6 @@ public class SecurityConfig {
         return  new ProviderManager(daoAuthenticationProvider);
     }
 
-
-
-
-
    /* @Bean
     UserDetailsManager userDetailsManager(){
         return  new InMemoryUserDetailsManager(
@@ -65,9 +61,6 @@ public class SecurityConfig {
         );
 
     }*/
-
-
-
 
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception{

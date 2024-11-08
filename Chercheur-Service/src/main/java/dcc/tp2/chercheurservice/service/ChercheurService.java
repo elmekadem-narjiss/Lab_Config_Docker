@@ -70,12 +70,4 @@ public class ChercheurService {
     public long getNombreDeChercheurParEnseignant(Long id_enseignant) {
         return chercheurRepository.nombre_chercheur_Enseignant(id_enseignant);
     }
-
-
-
-
-
-
-
-
 }

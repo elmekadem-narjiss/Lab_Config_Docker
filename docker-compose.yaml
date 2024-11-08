@@ -1,0 +1,134 @@
+services:
+  labo_discovery_service:
+    build: ./Discovery-Service
+    container_name: labo_discovery_service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.10
+
+  labo_security_service:
+    build: ./Security_Microservice
+    container_name: labo_security_service
+    ports:
+      - "8787:8787"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+      - CONFIG_SERVICE_URL=http://labo_config_service:9999
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.25
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+
+  labo_config_service:
+    build: ./Configuration-Service
+    container_name: labo_config_service
+    ports:
+      - "9999:9999"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.20
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+
+  labo_gateway_service:
+    build: ./Gateway-service
+    container_name: labo_gateway_service
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.30
+
+  labo_enseignant_service:
+    build: ./Enseignant-Service
+    container_name: labo_enseignant_service
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+      - CONFIG_SERVICE_URL=http://labo_config_service:9999
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.40
+
+  labo_chercheur_service:
+    build: ./Chercheur-Service
+    container_name: labo_chercheur_service
+    ports:
+      - "8082:8082"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+      - CONFIG_SERVICE_URL=http://labo_config_service:9999
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.50
+
+  labo_projet_service:
+    build: ./Projet-Service
+    container_name: labo_projet_service
+    ports:
+      - "8083:8083"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 10s
+      retries: 4
+    environment:
+      - DISCOVERY_SERVICE_URL=http://labo_discovery_service:8761/eureka
+      - CONFIG_SERVICE_URL=http://labo_config_service:9999
+    depends_on:
+      labo_discovery_service:
+        condition: service_healthy
+    networks:
+      microservices-network:
+        ipv4_address: 192.168.100.60
+
+networks:
+  microservices-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+          gateway: 192.168.100.1

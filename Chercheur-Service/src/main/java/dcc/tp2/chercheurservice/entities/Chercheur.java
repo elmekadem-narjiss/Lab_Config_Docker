@@ -27,7 +27,7 @@ public class Chercheur {
 
 
     // juste pour récuperation de l'enseignant encadrée.
-    @Transient
+    @Transient //les champs marqués par @Transient ne sont pas sauvegardés lorsque l'objet est stocké, et ils ne sont pas chargés lors de la récupération de l'entité depuis la base de données.
     private Enseignant enseignant;
 
 
